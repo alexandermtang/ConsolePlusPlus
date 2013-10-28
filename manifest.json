@@ -8,5 +8,6 @@
   "minimum_chrome_version": "18.0",
   "devtools_page": "console.html",
   "permissions": [
+    "tabs"
   ]
 }
