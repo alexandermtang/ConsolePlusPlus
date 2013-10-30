@@ -15,12 +15,32 @@ results.setShowPrintMargin(false);
 results.renderer.setShowGutter(false);
 results.setHighlightActiveLine(false);
 
+var num_new_messages = 0;
+
 function execute() {
   chrome.devtools.inspectedWindow.eval(
     editor.session.getValue(),
     function(result, isException) {
+      if (!isException) {
+        chrome.experimental.devtools.console.getMessages(print_new_messages);
+      }
     });
 }
+
+// TODO how but how do you get anything that gets printed to console?
+function print_new_messages(messages) {
+  var str, len = messages.length;
+  for (var i = num_new_messages; i > 0; i--) {
+    var m = messages[len - i];
+    str += m.line-1 + ": " + m.text + "\n";
+  }
+  results.session.setValue(str);
+  num_new_messages = 0;
+}
+
+chrome.experimental.devtools.console.onMessageAdded.addListener(function(m) {
+  num_new_messages++;
+});
 
 var executeOptions = {
   name: "execute",
